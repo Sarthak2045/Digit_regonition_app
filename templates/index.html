@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digit Recognition</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8C52FF;
+            --secondary-color: #FF5E7D;
+            --background-color: #121212;
+            --card-bg: #1E1E1E;
+            --card-secondary: #252525;
+            --text-color: #E0E0E0;
+            --text-muted: #AAAAAA;
+            --accent-color: #8C52FF;
+            --success-color: #4CAF50;
+            --header-gradient: linear-gradient(135deg, #8C52FF 0%, #5E17EB 100%);
+            --border-color: #333333;
+        }
+
+        body {
+            padding-top: 2rem;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+        }
+
+        .main-header {
+            background: var(--header-gradient);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 25px;
+            margin-bottom: 0;
+            box-shadow: 0 4px 20px rgba(140, 82, 255, 0.3);
+        }
+
+        .app-title {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0;
+        }
+
+        .app-subtitle {
+            opacity: 0.9;
+            font-weight: 300;
+            margin-top: 10px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            background-color: var(--card-bg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .card-header {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: 600;
+            padding: 15px 20px;
+            border-bottom: none;
+        }
+
+        .card-body {
+            padding: 25px;
+            background-color: var(--card-bg);
+        }
+
+        .form-container {
+            background-color: var(--card-secondary);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #7B45E8;
+            border-color: #7B45E8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #424242;
+            border-color: #424242;
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #333333;
+            border-color: #333333;
+            color: var(--text-color);
+            transform: translateY(-2px);
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            background-color: #2A2A2A;
+            color: var(--text-color);
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(140, 82, 255, 0.3);
+            border-color: var(--primary-color);
+            background-color: #2A2A2A;
+            color: var(--text-color);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .prediction-result {
+            background-color: var(--card-secondary);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .predicted-digit-container {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #5E17EB 100%);
+            border-radius: 10px;
+            color: white;
+            padding: 25px;
+            box-shadow: 0 6px 12px rgba(140, 82, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        #predicted-digit {
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #333333;
+            margin-top: 10px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar {
+            background: linear-gradient(to right, var(--primary-color), #5E17EB);
+            border-radius: 5px;
+        }
+
+        .list-group-item {
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+            background-color: #2A2A2A;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: #333333;
+            transform: translateX(3px);
+        }
+
+        .badge {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #5E17EB 100%);
+        }
+
+        .confidence-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .confidence-label {
+            font-weight: 600;
+            margin-right: 10px;
+            color: var(--text-color);
+        }
+
+        .confidence-value {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .top-predictions-header {
+            font-weight: 600;
+            margin: 25px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .image-preview-container {
+            background-color: #2A2A2A;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px dashed var(--border-color);
+            text-align: center;
+        }
+
+        .image-preview {
+            max-height: 280px;
+            border-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .upload-hint {
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        .result-section {
+            border-radius: 10px;
+            padding: 20px;
+            background-color: var(--card-secondary);
+        }
+
+        /* Animation Effects */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-animation {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            border-color: #8C52FF !important;
+            background-color: #333333 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="main-header">
+                        <h1 class="app-title display-5">Digit Recognition</h1>
+                        <p class="app-subtitle lead">Upload an image to identify handwritten digits</p>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="form-container">
+                            <form id="upload-form" enctype="multipart/form-data">
+                                <div class="mb-4">
+                                    <label for="image-upload" class="form-label">
+                                        <i class="fas fa-upload me-2"></i>Select an image of a handwritten digit
+                                    </label>
+                                    <input class="form-control" type="file" id="image-upload" accept="image/*">
+                                </div>
+                                
+                                <div id="image-preview-container" class="image-preview-container d-none">
+                                    <img id="image-preview" class="img-fluid image-preview">
+                                </div>
+                                
+                                <div id="upload-placeholder" class="image-preview-container text-center">
+                                    <i class="fas fa-file-image upload-icon"></i>
+                                    <p class="upload-hint">Select an image file or drag and drop here</p>
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <button type="submit" id="analyze-button" class="btn btn-primary">
+                                        <i class="fas fa-search me-2"></i>Analyze Image
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Card -->
+                <div id="results-container" class="card d-none results-animation">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar me-2"></i>Recognition Results
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="predicted-digit-container text-center">
+                                    <h2 id="predicted-digit" class="display-1 mb-2">?</h2>
+                                    <p class="mb-0">Predicted Digit</p>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="result-section">
+                                    <div class="confidence-header">
+                                        <span class="confidence-label">Confidence:</span>
+                                        <span id="confidence-value" class="confidence-value">0</span>%
+                                    </div>
+                                    <div class="progress">
+                                        <div id="confidence-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                    
+                                    <h5 class="top-predictions-header">
+                                        <i class="fas fa-list-ol me-2"></i>Top 3 Predictions
+                                    </h5>
+                                    <ul id="top3-list" class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-calculator me-2"></i>Digit 0</span>
+                                            <span class="badge bg-primary rounded-pill">0%</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Digit Recognition | Powered by PyTorch & Flask</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageUpload = document.getElementById('image-upload');
+            const imagePreview = document.getElementById('image-preview');
+            const previewContainer = document.getElementById('image-preview-container');
+            const uploadPlaceholder = document.getElementById('upload-placeholder');
+            
+            // File upload preview
+            imageUpload.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        previewContainer.classList.remove('d-none');
+                        uploadPlaceholder.classList.add('d-none');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Drag and drop functionality
+            const dropArea = uploadPlaceholder;
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropArea.classList.add('highlight');
+            }
+            
+            function unhighlight() {
+                dropArea.classList.remove('highlight');
+            }
+            
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length) {
+                    imageUpload.files = files;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        previewContainer.classList.remove('d-none');
+                        uploadPlaceholder.classList.add('d-none');
+                    }
+                    reader.readAsDataURL(files[0]);
+                }
+            }
+            
+            // Form submission
+            document.getElementById('upload-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const submitBtn = document.getElementById('analyze-button');
+                const originalBtnText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+                submitBtn.disabled = true;
+                
+                const formData = new FormData();
+                
+                if (imageUpload.files.length > 0) {
+                    formData.append('file', imageUpload.files[0]);
+                    
+                    fetch('/predict_upload', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        displayResults(data);
+                        submitBtn.innerHTML = originalBtnText;
+                        submitBtn.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        submitBtn.innerHTML = originalBtnText;
+                        submitBtn.disabled = false;
+                        alert('An error occurred during processing. Please try again.');
+                    });
+                } else {
+                    alert('Please select an image first.');
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                }
+            });
+            
+            // Display results function
+            function displayResults(data) {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+                
+                const resultsContainer = document.getElementById('results-container');
+                const predictedDigit = document.getElementById('predicted-digit');
+                const confidenceValue = document.getElementById('confidence-value');
+                const confidenceBar = document.getElementById('confidence-bar');
+                const top3List = document.getElementById('top3-list');
+                
+                // Display the results
+                predictedDigit.textContent = data.digit;
+                const confidence = parseFloat(data.confidence);
+                confidenceValue.textContent = confidence.toFixed(2);
+                confidenceBar.style.width = confidence + '%';
+                
+                // Set color based on confidence
+                if (confidence > 90) {
+                    confidenceBar.className = 'progress-bar bg-success';
+                } else if (confidence > 70) {
+                    confidenceBar.className = 'progress-bar bg-info';
+                } else if (confidence > 40) {
+                    confidenceBar.className = 'progress-bar bg-warning';
+                } else {
+                    confidenceBar.className = 'progress-bar bg-danger';
+                }
+                
+                // Clear previous top3 list
+                top3List.innerHTML = '';
+                
+                // Add top 3 predictions
+                if (Array.isArray(data.top3)) {
+                    data.top3.forEach(prediction => {
+                        const digit = prediction[0];
+                        const predConfidence = parseFloat(prediction[1]);
+                        
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        
+                        // Change badge color based on confidence
+                        let badgeClass = 'bg-primary';
+                        if (predConfidence > 90) {
+                            badgeClass = 'bg-success';
+                        } else if (predConfidence > 70) {
+                            badgeClass = 'bg-info';
+                        } else if (predConfidence > 40) {
+                            badgeClass = 'bg-warning';
+                        } else {
+                            badgeClass = 'bg-danger';
+                        }
+                        
+                        listItem.innerHTML = `
+                            <span><i class="fas fa-calculator me-2"></i>Digit ${digit}</span>
+                            <span class="badge ${badgeClass} rounded-pill">${predConfidence.toFixed(2)}%</span>
+                        `;
+                        
+                        top3List.appendChild(listItem);
+                    });
+                }
+                
+                // Reset results container animation
+                resultsContainer.classList.remove('results-animation');
+                void resultsContainer.offsetWidth; // Trigger reflow
+                resultsContainer.classList.add('results-animation');
+                
+                // Show results container
+                resultsContainer.classList.remove('d-none');
+                
+                // Scroll to results
+                setTimeout(() => {
+                    resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
